@@ -1,0 +1,7 @@
+RED='\033[0;31m'                                                                     
+GREEN='\033[0;32m'                                                                   
+
+if [ "$1" = "" ]; then		
+
+     echo "${RED}No product selected to be installed/updated. ${NC}"                                                                                     
+

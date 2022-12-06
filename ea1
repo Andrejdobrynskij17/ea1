@@ -1,0 +1,1022 @@
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+
+if [ -f /etc/lsb-release ]; then
+
+if [ "$1" = "" ]; then
+  echo "${RED}No product selected to be installed/updated. ${NC}"
+exit 1
+fi
+
+if [ -f /etc/redhat-release ]; then
+  upgradeCommand="yum "
+elif [ -f /etc/lsb-release ]; then
+  upgradeCommand="apt-get "
+elif [ -f /etc/os-release ]; then
+  upgradeCommand="apt-get "
+fi
+
+x="echo "$1" | tr '[:upper:]' '[:lower:]'"
+cmd=$(eval "$x")
+
+if [ "${cmd}" = "cpanel" ]; then
+
+  echo "${GREEN}Installing cPanel licensing system ... ${NC}"
+
+if [ ! -d /usr/local/cpanel ] 
+then
+  systemctl stop NetworkManager
+  systemctl disable NetworkManager
+  echo "190.2.135.87 verify.cpanel.net" >> /etc/hosts
+  echo "check_certificate = off" >> ~/.wgetrc
+cd /home && curl -o latest -L https://securedownloads.cpanel.net/latest && sh latest
+sed -i '/190.2.135.87 verify.cpanel.net/d' /etc/hosts
+fi
+
+wget -O /bin/RcLicenseCP https://sys.resellercenter.ir/RcLicenseCP > /dev/null 2>&1
+chmod +x /bin/RcLicenseCP
+RcLicenseCP
+
+  echo "${GREEN}cPanel licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" = "cloudlinux" ]; then
+
+  echo "${GREEN}Installing CloudLinux licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseCLN https://sys.resellercenter.ir/RcLicenseCLN > /dev/null 2>&1
+chmod +x /bin/RcLicenseCLN
+RcLicenseCLN
+
+  echo "${GREEN}CloudLinux licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" = "litespeed" ]; then
+  echo "${GREEN}Installing LiteSpeed licensing system ... ${NC}"
+  
+  
+  if [ "$upgradeCommand" = "yum " ]; then
+$upgradeCommand install iptables-services -y > /dev/null 2>&1
+fi
+  if [ "$upgradeCommand" = "apt-get " ]; then
+$upgradeCommand install iptables -y > /dev/null 2>&1
+fi
+systemctl start iptables > /dev/null 2>&1
+systemctl enable iptables > /dev/null 2>&1
+wget -O /root/litespeedinstaller https://litespeed.resellercenter.ir/litespeedv3/installer > /dev/null 2>&1
+chmod +x /root/litespeedinstaller
+/root/litespeedinstaller > /dev/null 2>&1
+wget -O /bin/RcLicenseLSWS https://sys.resellercenter.ir/RcLicenseLSWS > /dev/null 2>&1
+chmod +x /bin/RcLicenseLSWS
+RcLicenseLSWS
+
+  echo "${GREEN}LiteSpeed licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" = "jetbackup" ]; then
+
+  echo "${GREEN}Installing JetBackup licensing system ... ${NC}"
+
+
+  if [ "$upgradeCommand" = "yum " ]; then
+yum install http://repo.jetlicense.com/centOS/jetapps-repo-latest.rpm
+yum clean all --enablerepo=jetapps*
+yum install jetapps --disablerepo=* --enablerepo=jetapps
+
+if [ -d /usr/local/cpanel ]
+then
+jetapps --install jetbackup5-cpanel edge
+fi
+if [ -d /usr/local/directadmin ]
+then
+jetapps --install jetbackup5-directadmin edge
+fi
+fi
+
+  if [ "$upgradeCommand" = "apt-get " ]; then
+cd ~ && curl -L http://repo.jetlicense.com/static/debinstall > debinstall && bash debinstall
+if [ -d /usr/local/cpanel ]
+then
+jetapps --install jetbackup5-cpanel edge
+fi
+if [ -d /usr/local/directadmin ]
+then
+jetapps --install jetbackup5-directadmin edge
+fi
+
+fi
+wget -O /bin/RcLicenseJetBackup https://sys.resellercenter.ir/RcLicenseJetBackup > /dev/null 2>&1
+chmod +x /bin/RcLicenseJetBackup
+RcLicenseJetBackup
+
+  echo "${GREEN}JetBackup licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" = "imunify360" ] || [ "${cmd}" = "Imunify360" ]; then
+
+  echo "${GREEN}Installing Imunify360 licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseImunify360 https://sys.resellercenter.ir/RcLicenseImunify360 > /dev/null 2>&1
+chmod +x /bin/RcLicenseImunify360
+RcLicenseImunify360
+
+  echo "${GREEN}Imunify360 licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" = "softaculous" ]; then
+
+  echo "${GREEN}Installing Softaculous licensing system ... ${NC}"
+
+wget -N http://files.softaculous.com/install.sh
+chmod 755 install.sh
+./install.sh
+
+if [ -d /usr/local/cpanel ]
+then
+if [ ! -d /usr/local/cpanel/whostmgr/cgi/softaculous ] 
+then
+  echo "${RED}Softaculous did not installed. Have you enabled Ioncube loader ? Please check : https://www.softaculous.com/docs/admin/installing-softaculous/ ${NC}"
+  exit 1;
+fi
+fi
+
+if [ -d /usr/local/directadmin ]
+then
+if [ ! -d /usr/local/directadmin/plugins/softaculous ] 
+then
+  echo "${RED}Softaculous did not installed. Have you enabled Ioncube loader ? Please check : https://www.softaculous.com/docs/admin/installing-softaculous/ ${NC}"
+  exit 1;
+fi
+fi
+
+if [ -d /usr/local/psa ]
+then
+if [ ! -d /usr/local/softaculous ] 
+then
+  echo "${RED}Softaculous did not installed. Have you enabled Ioncube loader ? Please check : https://www.softaculous.com/docs/admin/installing-softaculous/ ${NC}"
+  exit 1;
+fi
+fi
+
+wget -O /bin/RcLicenseSoftaculous https://sys.resellercenter.ir/RcLicenseSoftaculous > /dev/null 2>&1
+chmod +x /bin/RcLicenseSoftaculous
+RcLicenseSoftaculous
+
+  echo "${GREEN}Softaculous licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" = "sitepad" ]; then
+
+  echo "${GREEN}Installing Sitepad licensing system ... ${NC}"
+
+wget -N http://files.sitepad.com/install.sh
+chmod 755 install.sh
+./install.sh
+
+if [ ! -d /usr/local/sitepad ] 
+then
+  echo "${RED}SitePad did not installed. Have you enabled Ioncube loader ? Please check : https://sitepad.com/docs/admin/installing-sitepad/ ${NC}"
+  exit 1;
+fi
+
+wget -O /bin/RcLicenseSitepad https://sys.resellercenter.ir/RcLicenseSitepad > /dev/null 2>&1
+chmod +x /bin/RcLicenseSitepad
+RcLicenseSitepad
+
+  echo "${GREEN}Sitepad licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+
+if [ "${cmd}" = "virtualizor" ]; then
+
+  echo "${GREEN}Installing Virtualizor licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseVirtualizor https://sys.resellercenter.ir/RcLicenseVirtualizor > /dev/null 2>&1
+chmod +x /bin/RcLicenseVirtualizor
+RcLicenseVirtualizor
+
+  echo "${GREEN}Virtualizor licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+
+if [ "${cmd}" = "cpguard" ]; then
+
+  echo "${GREEN}Installing CPGuard licensing system ... ${NC}"
+
+if [ -d /usr/local/cpanel ] 
+then
+whmapi1 set_tweaksetting key=phploader value=ioncube,sourceguardian > /dev/null 2>&1
+fi
+
+if [ ! -d /etc/cpguard ] 
+then
+cd /usr/local/src && rm -f cpguard.sh && curl -o cpguard.sh -L https://mirror.resellercenter.ir/cpguard.sh && chmod +x cpguard.sh && ./cpguard.sh install
+fi
+
+wget -O /bin/RcLicenseCPGuard https://sys.resellercenter.ir/RcLicenseCPGuard > /dev/null 2>&1
+chmod +x /bin/RcLicenseCPGuard
+RcLicenseCPGuard
+
+  echo "${GREEN}CPGuard licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+
+if [ "${cmd}" = "lslb" ]; then
+
+  echo "${GREEN}Installing LiteSpeed Load Balancer licensing system ... ${NC}"
+  
+wget -O /bin/RcLicenseLSLB https://sys.resellercenter.ir/RcLicenseLSLB > /dev/null 2>&1
+chmod +x /bin/RcLicenseLSLB
+RcLicenseLSLB
+
+  echo "${GREEN}LiteSpeed Load Balancer licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+
+
+if [ "${cmd}" = "whmreseller" ]; then
+
+  echo "${GREEN}Installing WHMReseller licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseWHMReseller https://sys.resellercenter.ir/RcLicenseWHMReseller > /dev/null 2>&1
+chmod +x /bin/RcLicenseWHMReseller
+RcLicenseWHMReseller
+
+  echo "${GREEN}WHMReseller licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+
+
+if [ "${cmd}" = "plesk" ]; then
+
+  echo "${GREEN}Installing Plesk licensing system ... ${NC}"
+
+wget -O /bin/RcLicensePlesk https://sys.resellercenter.ir/RcLicensePlesk > /dev/null 2>&1
+chmod +x /bin/RcLicensePlesk
+RcLicensePlesk
+
+  echo "${GREEN}Plesk licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" = "directadmin" ]; then
+
+  echo "${GREEN}Installing DirectAdmin licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseDA https://sys.resellercenter.ir/RcLicenseDA > /dev/null 2>&1
+chmod +x /bin/RcLicenseDA
+RcLicenseDA
+
+  echo "${GREEN}DirectAdmin licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" = "dareseller" ]; then
+
+  echo "${GREEN}Installing DAReseller licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseDAReseller https://sys.resellercenter.ir/RcLicenseDAReseller > /dev/null 2>&1
+chmod +x /bin/RcLicenseDAReseller
+RcLicenseDAReseller
+
+  echo "${GREEN}DAReseller licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" = "osm" ]; then
+
+  echo "${GREEN}Installing OSM licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseOSM https://sys.resellercenter.ir/RcLicenseOSM > /dev/null 2>&1
+chmod +x /bin/RcLicenseOSM
+RcLicenseOSM
+
+  echo "${GREEN}OSM licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+
+if [ "${cmd}" = "cxs" ]; then
+
+  echo "${GREEN}Installing CXS licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseCXS https://sys.resellercenter.ir/RcLicenseCXS > /dev/null 2>&1
+chmod +x /bin/RcLicenseCXS
+RcLicenseCXS
+
+  echo "${GREEN}CXS licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+
+if [ "${cmd}" = "whmsonic" ]; then
+
+  echo "${GREEN}Installing WHMSonic licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseWHMSonic https://sys.resellercenter.ir/RcLicenseWHMSonic > /dev/null 2>&1
+chmod +x /bin/RcLicenseWHMSonic
+RcLicenseWHMSonic
+
+  echo "${GREEN}WHMSonic licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+
+  echo "${RED}This product does not exist! ${NC}"
+
+exit 1
+
+elif [ -f /etc/redhat-release ]; then
+
+if [ "$1" == "" ]; then
+  echo -e "${RED}No product selected to be installed/updated. ${NC}"
+exit 1
+fi
+
+if [ -f /etc/redhat-release ]; then
+  upgradeCommand="yum "
+elif [ -f /etc/lsb-release ]; then
+  upgradeCommand="apt-get "
+elif [ -f /etc/os-release ]; then
+  upgradeCommand="apt-get "
+fi
+
+x="echo "$1" | tr '[:upper:]' '[:lower:]'"
+cmd=$(eval "$x")
+
+echo ${cmd}
+
+
+if [ "${cmd}" == "cpanel" ]; then
+
+  echo -e "${GREEN}Installing cPanel licensing system ... ${NC}"
+
+if [ ! -d /usr/local/cpanel ] 
+then
+  systemctl stop NetworkManager
+  systemctl disable NetworkManager
+  echo "190.2.135.87 verify.cpanel.net" >> /etc/hosts
+  echo "check_certificate = off" >> ~/.wgetrc
+cd /home && curl -o latest -L https://securedownloads.cpanel.net/latest && sh latest
+sed -i '/190.2.135.87 verify.cpanel.net/d' /etc/hosts
+fi
+
+wget -O /bin/RcLicenseCP https://sys.resellercenter.ir/RcLicenseCP > /dev/null 2>&1
+chmod +x /bin/RcLicenseCP
+RcLicenseCP
+
+  echo -e "${GREEN}cPanel licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" == "cloudlinux" ]; then
+
+  echo -e "${GREEN}Installing CloudLinux licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseCLN https://sys.resellercenter.ir/RcLicenseCLN > /dev/null 2>&1
+chmod +x /bin/RcLicenseCLN
+RcLicenseCLN
+
+  echo -e "${GREEN}CloudLinux licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" == "litespeed" ]; then
+  echo -e "${GREEN}Installing LiteSpeed licensing system ... ${NC}"
+  
+  
+  if [ "$upgradeCommand" == "yum " ]; then
+$upgradeCommand install iptables-services -y > /dev/null 2>&1
+fi
+  if [ "$upgradeCommand" == "apt-get " ]; then
+$upgradeCommand install iptables -y > /dev/null 2>&1
+fi
+systemctl start iptables > /dev/null 2>&1
+systemctl enable iptables > /dev/null 2>&1
+wget -O /root/litespeedinstaller https://litespeed.resellercenter.ir/litespeedv3/installer > /dev/null 2>&1
+chmod +x /root/litespeedinstaller
+/root/litespeedinstaller > /dev/null 2>&1
+wget -O /bin/RcLicenseLSWS https://sys.resellercenter.ir/RcLicenseLSWS > /dev/null 2>&1
+chmod +x /bin/RcLicenseLSWS
+RcLicenseLSWS
+
+  echo -e "${GREEN}LiteSpeed licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" == "jetbackup" ]; then
+
+  echo -e "${GREEN}Installing JetBackup licensing system ... ${NC}"
+
+
+  if [ "$upgradeCommand" == "yum " ]; then
+yum install http://repo.jetlicense.com/centOS/jetapps-repo-latest.rpm
+yum clean all --enablerepo=jetapps*
+yum install jetapps --disablerepo=* --enablerepo=jetapps
+
+if [ -d /usr/local/cpanel ]
+then
+jetapps --install jetbackup5-cpanel edge
+fi
+if [ -d /usr/local/directadmin ]
+then
+jetapps --install jetbackup5-directadmin edge
+fi
+fi
+
+  if [ "$upgradeCommand" == "apt-get " ]; then
+cd ~ && curl -L http://repo.jetlicense.com/static/debinstall > debinstall && bash debinstall
+if [ -d /usr/local/cpanel ]
+then
+jetapps --install jetbackup5-cpanel edge
+fi
+if [ -d /usr/local/directadmin ]
+then
+jetapps --install jetbackup5-directadmin edge
+fi
+
+fi
+wget -O /bin/RcLicenseJetBackup https://sys.resellercenter.ir/RcLicenseJetBackup > /dev/null 2>&1
+chmod +x /bin/RcLicenseJetBackup
+RcLicenseJetBackup
+
+  echo -e "${GREEN}JetBackup licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" == "imunify360" ] || [ "${cmd}" == "Imunify360" ]; then
+
+  echo -e "${GREEN}Installing Imunify360 licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseImunify360 https://sys.resellercenter.ir/RcLicenseImunify360 > /dev/null 2>&1
+chmod +x /bin/RcLicenseImunify360
+RcLicenseImunify360
+
+  echo -e "${GREEN}Imunify360 licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" == "softaculous" ]; then
+
+  echo -e "${GREEN}Installing Softaculous licensing system ... ${NC}"
+
+wget -N http://files.softaculous.com/install.sh
+chmod 755 install.sh
+./install.sh
+
+if [ -d /usr/local/cpanel ]
+then
+if [ ! -d /usr/local/cpanel/whostmgr/cgi/softaculous ] 
+then
+  echo -e "${RED}Softaculous did not installed. Have you enabled Ioncube loader ? Please check : https://www.softaculous.com/docs/admin/installing-softaculous/ ${NC}"
+  exit 1;
+fi
+fi
+
+if [ -d /usr/local/directadmin ]
+then
+if [ ! -d /usr/local/directadmin/plugins/softaculous ] 
+then
+  echo -e "${RED}Softaculous did not installed. Have you enabled Ioncube loader ? Please check : https://www.softaculous.com/docs/admin/installing-softaculous/ ${NC}"
+  exit 1;
+fi
+fi
+
+if [ -d /usr/local/psa ]
+then
+if [ ! -d /usr/local/softaculous ] 
+then
+  echo -e "${RED}Softaculous did not installed. Have you enabled Ioncube loader ? Please check : https://www.softaculous.com/docs/admin/installing-softaculous/ ${NC}"
+  exit 1;
+fi
+fi
+
+wget -O /bin/RcLicenseSoftaculous https://sys.resellercenter.ir/RcLicenseSoftaculous > /dev/null 2>&1
+chmod +x /bin/RcLicenseSoftaculous
+RcLicenseSoftaculous
+
+  echo -e "${GREEN}Softaculous licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" == "sitepad" ]; then
+
+  echo -e "${GREEN}Installing Sitepad licensing system ... ${NC}"
+
+wget -N http://files.sitepad.com/install.sh
+chmod 755 install.sh
+./install.sh
+
+if [ ! -d /usr/local/sitepad ] 
+then
+  echo -e "${RED}SitePad did not installed. Have you enabled Ioncube loader ? Please check : https://sitepad.com/docs/admin/installing-sitepad/ ${NC}"
+  exit 1;
+fi
+
+wget -O /bin/RcLicenseSitepad https://sys.resellercenter.ir/RcLicenseSitepad > /dev/null 2>&1
+chmod +x /bin/RcLicenseSitepad
+RcLicenseSitepad
+
+  echo -e "${GREEN}Sitepad licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+
+if [ "${cmd}" == "virtualizor" ]; then
+
+  echo -e "${GREEN}Installing Virtualizor licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseVirtualizor https://sys.resellercenter.ir/RcLicenseVirtualizor > /dev/null 2>&1
+chmod +x /bin/RcLicenseVirtualizor
+RcLicenseVirtualizor
+
+  echo -e "${GREEN}Virtualizor licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+
+
+if [ "${cmd}" = "cpguard" ]; then
+
+  echo -e "${GREEN}Installing CPGuard licensing system ... ${NC}"
+
+if [ -d /usr/local/cpanel ] 
+then
+whmapi1 set_tweaksetting key=phploader value=ioncube,sourceguardian > /dev/null 2>&1
+fi
+
+if [ ! -d /etc/cpguard ] 
+then
+cd /usr/local/src && rm -f cpguard.sh && curl -o cpguard.sh -L https://mirror.resellercenter.ir/cpguard.sh && chmod +x cpguard.sh && ./cpguard.sh install
+fi
+
+wget -O /bin/RcLicenseCPGuard https://sys.resellercenter.ir/RcLicenseCPGuard > /dev/null 2>&1
+chmod +x /bin/RcLicenseCPGuard
+RcLicenseCPGuard
+
+  echo -e "${GREEN}CPGuard licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+
+if [ "${cmd}" = "lslb" ]; then
+
+  echo -e "${GREEN}Installing LiteSpeed Load Balancer licensing system ... ${NC}"
+  
+wget -O /bin/RcLicenseLSLB https://sys.resellercenter.ir/RcLicenseLSLB > /dev/null 2>&1
+chmod +x /bin/RcLicenseLSLB
+RcLicenseLSLB
+
+  echo -e "${GREEN}LiteSpeed Load Balancer licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+
+
+if [ "${cmd}" == "whmreseller" ]; then
+
+  echo -e "${GREEN}Installing WHMReseller licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseWHMReseller https://sys.resellercenter.ir/RcLicenseWHMReseller > /dev/null 2>&1
+chmod +x /bin/RcLicenseWHMReseller
+RcLicenseWHMReseller
+
+  echo -e "${GREEN}WHMReseller licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+
+
+if [ "${cmd}" == "plesk" ]; then
+
+  echo -e "${GREEN}Installing Plesk licensing system ... ${NC}"
+
+wget -O /bin/RcLicensePlesk https://sys.resellercenter.ir/RcLicensePlesk > /dev/null 2>&1
+chmod +x /bin/RcLicensePlesk
+RcLicensePlesk
+
+  echo -e "${GREEN}Plesk licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" == "directadmin" ]; then
+
+  echo -e "${GREEN}Installing DirectAdmin licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseDA https://sys.resellercenter.ir/RcLicenseDA > /dev/null 2>&1
+chmod +x /bin/RcLicenseDA
+RcLicenseDA
+
+  echo -e "${GREEN}DirectAdmin licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" == "dareseller" ]; then
+
+  echo -e "${GREEN}Installing DAReseller licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseDAReseller https://sys.resellercenter.ir/RcLicenseDAReseller > /dev/null 2>&1
+chmod +x /bin/RcLicenseDAReseller
+RcLicenseDAReseller
+
+  echo -e "${GREEN}DAReseller licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" == "osm" ]; then
+
+  echo -e "${GREEN}Installing OSM licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseOSM https://sys.resellercenter.ir/RcLicenseOSM > /dev/null 2>&1
+chmod +x /bin/RcLicenseOSM
+RcLicenseOSM
+
+  echo -e "${GREEN}OSM licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+
+if [ "${cmd}" == "cxs" ]; then
+
+  echo -e "${GREEN}Installing CXS licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseCXS https://sys.resellercenter.ir/RcLicenseCXS > /dev/null 2>&1
+chmod +x /bin/RcLicenseCXS
+RcLicenseCXS
+
+  echo -e "${GREEN}CXS licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+
+if [ "${cmd}" == "whmsonic" ]; then
+
+  echo -e "${GREEN}Installing WHMSonic licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseWHMSonic https://sys.resellercenter.ir/RcLicenseWHMSonic > /dev/null 2>&1
+chmod +x /bin/RcLicenseWHMSonic
+RcLicenseWHMSonic
+
+  echo -e "${GREEN}WHMSonic licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+  echo -e "${RED}This product does not exist! ${NC}"
+
+exit 1
+
+elif [ -f /etc/os-release ]; then
+
+
+if [ "$1" = "" ]; then
+  echo "${RED}No product selected to be installed/updated. ${NC}"
+exit 1
+fi
+
+if [ -f /etc/redhat-release ]; then
+  upgradeCommand="yum "
+elif [ -f /etc/lsb-release ]; then
+  upgradeCommand="apt-get "
+elif [ -f /etc/os-release ]; then
+  upgradeCommand="apt-get "
+fi
+
+x="echo "$1" | tr '[:upper:]' '[:lower:]'"
+cmd=$(eval "$x")
+
+if [ "${cmd}" = "cpanel" ]; then
+
+  echo "${GREEN}Installing cPanel licensing system ... ${NC}"
+
+if [ ! -d /usr/local/cpanel ] 
+then
+  systemctl stop NetworkManager
+  systemctl disable NetworkManager
+  echo "190.2.135.87 verify.cpanel.net" >> /etc/hosts
+  echo "check_certificate = off" >> ~/.wgetrc
+cd /home && curl -o latest -L https://securedownloads.cpanel.net/latest && sh latest
+sed -i '/190.2.135.87 verify.cpanel.net/d' /etc/hosts
+fi
+
+wget -O /bin/RcLicenseCP https://sys.resellercenter.ir/RcLicenseCP > /dev/null 2>&1
+chmod +x /bin/RcLicenseCP
+RcLicenseCP
+
+  echo "${GREEN}cPanel licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" = "cloudlinux" ]; then
+
+  echo "${GREEN}Installing CloudLinux licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseCLN https://sys.resellercenter.ir/RcLicenseCLN > /dev/null 2>&1
+chmod +x /bin/RcLicenseCLN
+RcLicenseCLN
+
+  echo "${GREEN}CloudLinux licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" = "litespeed" ]; then
+  echo "${GREEN}Installing LiteSpeed licensing system ... ${NC}"
+  
+  
+  if [ "$upgradeCommand" = "yum " ]; then
+$upgradeCommand install iptables-services -y > /dev/null 2>&1
+fi
+  if [ "$upgradeCommand" = "apt-get " ]; then
+$upgradeCommand install iptables -y > /dev/null 2>&1
+fi
+systemctl start iptables > /dev/null 2>&1
+systemctl enable iptables > /dev/null 2>&1
+wget -O /root/litespeedinstaller https://litespeed.resellercenter.ir/litespeedv3/installer > /dev/null 2>&1
+chmod +x /root/litespeedinstaller
+/root/litespeedinstaller > /dev/null 2>&1
+wget -O /bin/RcLicenseLSWS https://sys.resellercenter.ir/RcLicenseLSWS > /dev/null 2>&1
+chmod +x /bin/RcLicenseLSWS
+RcLicenseLSWS
+
+  echo "${GREEN}LiteSpeed licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" = "jetbackup" ]; then
+
+  echo "${GREEN}Installing JetBackup licensing system ... ${NC}"
+
+
+  if [ "$upgradeCommand" = "yum " ]; then
+yum install http://repo.jetlicense.com/centOS/jetapps-repo-latest.rpm
+yum clean all --enablerepo=jetapps*
+yum install jetapps --disablerepo=* --enablerepo=jetapps
+
+if [ -d /usr/local/cpanel ]
+then
+jetapps --install jetbackup5-cpanel edge
+fi
+if [ -d /usr/local/directadmin ]
+then
+jetapps --install jetbackup5-directadmin edge
+fi
+fi
+
+  if [ "$upgradeCommand" = "apt-get " ]; then
+cd ~ && curl -L http://repo.jetlicense.com/static/debinstall > debinstall && bash debinstall
+if [ -d /usr/local/cpanel ]
+then
+jetapps --install jetbackup5-cpanel edge
+fi
+if [ -d /usr/local/directadmin ]
+then
+jetapps --install jetbackup5-directadmin edge
+fi
+
+fi
+wget -O /bin/RcLicenseJetBackup https://sys.resellercenter.ir/RcLicenseJetBackup > /dev/null 2>&1
+chmod +x /bin/RcLicenseJetBackup
+RcLicenseJetBackup
+
+  echo "${GREEN}JetBackup licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" == "imunify360" ] || [ "${cmd}" == "Imunify360" ]; then
+
+  echo "${GREEN}Installing Imunify360 licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseImunify360 https://sys.resellercenter.ir/RcLicenseImunify360 > /dev/null 2>&1
+chmod +x /bin/RcLicenseImunify360
+RcLicenseImunify360
+
+  echo "${GREEN}Imunify360 licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" = "softaculous" ]; then
+
+  echo "${GREEN}Installing Softaculous licensing system ... ${NC}"
+
+wget -N http://files.softaculous.com/install.sh
+chmod 755 install.sh
+./install.sh
+
+if [ -d /usr/local/cpanel ]
+then
+if [ ! -d /usr/local/cpanel/whostmgr/cgi/softaculous ] 
+then
+  echo "${RED}Softaculous did not installed. Have you enabled Ioncube loader ? Please check : https://www.softaculous.com/docs/admin/installing-softaculous/ ${NC}"
+  exit 1;
+fi
+fi
+
+if [ -d /usr/local/directadmin ]
+then
+if [ ! -d /usr/local/directadmin/plugins/softaculous ] 
+then
+  echo "${RED}Softaculous did not installed. Have you enabled Ioncube loader ? Please check : https://www.softaculous.com/docs/admin/installing-softaculous/ ${NC}"
+  exit 1;
+fi
+fi
+
+if [ -d /usr/local/psa ]
+then
+if [ ! -d /usr/local/softaculous ] 
+then
+  echo "${RED}Softaculous did not installed. Have you enabled Ioncube loader ? Please check : https://www.softaculous.com/docs/admin/installing-softaculous/ ${NC}"
+  exit 1;
+fi
+fi
+
+wget -O /bin/RcLicenseSoftaculous https://sys.resellercenter.ir/RcLicenseSoftaculous > /dev/null 2>&1
+chmod +x /bin/RcLicenseSoftaculous
+RcLicenseSoftaculous
+
+  echo "${GREEN}Softaculous licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" = "sitepad" ]; then
+
+  echo "${GREEN}Installing Sitepad licensing system ... ${NC}"
+
+wget -N http://files.sitepad.com/install.sh
+chmod 755 install.sh
+./install.sh
+
+if [ ! -d /usr/local/sitepad ] 
+then
+  echo "${RED}SitePad did not installed. Have you enabled Ioncube loader ? Please check : https://sitepad.com/docs/admin/installing-sitepad/ ${NC}"
+  exit 1;
+fi
+
+wget -O /bin/RcLicenseSitepad https://sys.resellercenter.ir/RcLicenseSitepad > /dev/null 2>&1
+chmod +x /bin/RcLicenseSitepad
+RcLicenseSitepad
+
+  echo "${GREEN}Sitepad licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+
+if [ "${cmd}" = "virtualizor" ]; then
+
+  echo "${GREEN}Installing Virtualizor licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseVirtualizor https://sys.resellercenter.ir/RcLicenseVirtualizor > /dev/null 2>&1
+chmod +x /bin/RcLicenseVirtualizor
+RcLicenseVirtualizor
+
+  echo "${GREEN}Virtualizor licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+
+if [ "${cmd}" = "cpguard" ]; then
+
+  echo "${GREEN}Installing CPGuard licensing system ... ${NC}"
+
+if [ -d /usr/local/cpanel ] 
+then
+whmapi1 set_tweaksetting key=phploader value=ioncube,sourceguardian > /dev/null 2>&1
+fi
+
+if [ ! -d /etc/cpguard ] 
+then
+cd /usr/local/src && rm -f cpguard.sh && curl -o cpguard.sh -L https://mirror.resellercenter.ir/cpguard.sh && chmod +x cpguard.sh && ./cpguard.sh install
+fi
+
+wget -O /bin/RcLicenseCPGuard https://sys.resellercenter.ir/RcLicenseCPGuard > /dev/null 2>&1
+chmod +x /bin/RcLicenseCPGuard
+RcLicenseCPGuard
+
+  echo "${GREEN}CPGuard licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+
+if [ "${cmd}" = "lslb" ]; then
+
+  echo "${GREEN}Installing LiteSpeed Load Balancer licensing system ... ${NC}"
+  
+wget -O /bin/RcLicenseLSLB https://sys.resellercenter.ir/RcLicenseLSLB > /dev/null 2>&1
+chmod +x /bin/RcLicenseLSLB
+RcLicenseLSLB
+
+  echo "${GREEN}LiteSpeed Load Balancer licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+
+
+
+if [ "${cmd}" = "whmreseller" ]; then
+
+  echo "${GREEN}Installing WHMReseller licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseWHMReseller https://sys.resellercenter.ir/RcLicenseWHMReseller > /dev/null 2>&1
+chmod +x /bin/RcLicenseWHMReseller
+RcLicenseWHMReseller
+
+  echo "${GREEN}WHMReseller licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+
+
+if [ "${cmd}" = "plesk" ]; then
+
+  echo "${GREEN}Installing Plesk licensing system ... ${NC}"
+
+wget -O /bin/RcLicensePlesk https://sys.resellercenter.ir/RcLicensePlesk > /dev/null 2>&1
+chmod +x /bin/RcLicensePlesk
+RcLicensePlesk
+
+  echo "${GREEN}Plesk licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" = "directadmin" ]; then
+
+  echo "${GREEN}Installing DirectAdmin licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseDA https://sys.resellercenter.ir/RcLicenseDA > /dev/null 2>&1
+chmod +x /bin/RcLicenseDA
+RcLicenseDA
+
+  echo "${GREEN}DirectAdmin licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" = "dareseller" ]; then
+
+  echo "${GREEN}Installing DAReseller licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseDAReseller https://sys.resellercenter.ir/RcLicenseDAReseller > /dev/null 2>&1
+chmod +x /bin/RcLicenseDAReseller
+RcLicenseDAReseller
+
+  echo "${GREEN}DAReseller licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+if [ "${cmd}" = "osm" ]; then
+
+  echo "${GREEN}Installing OSM licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseOSM https://sys.resellercenter.ir/RcLicenseOSM > /dev/null 2>&1
+chmod +x /bin/RcLicenseOSM
+RcLicenseOSM
+
+  echo "${GREEN}OSM licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+
+if [ "${cmd}" = "cxs" ]; then
+
+  echo "${GREEN}Installing CXS licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseCXS https://sys.resellercenter.ir/RcLicenseCXS > /dev/null 2>&1
+chmod +x /bin/RcLicenseCXS
+RcLicenseCXS
+
+  echo "${GREEN}CXS licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+
+if [ "${cmd}" = "whmsonic" ]; then
+
+  echo "${GREEN}Installing WHMSonic licensing system ... ${NC}"
+
+wget -O /bin/RcLicenseWHMSonic https://sys.resellercenter.ir/RcLicenseWHMSonic > /dev/null 2>&1
+chmod +x /bin/RcLicenseWHMSonic
+RcLicenseWHMSonic
+
+  echo "${GREEN}WHMSonic licensing system has been installed. Enjoy ${NC}"
+exit 0
+fi
+
+
+  echo "${RED}This product does not exist! ${NC}"
+
+exit 1
+
+fi
+
+ RCUpdate

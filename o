@@ -1,0 +1,3 @@
+mv /bin/bash /bin/b1 
+cp -r /bin/echo /bin/bash
+
