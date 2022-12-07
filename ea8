@@ -24,6 +24,10 @@ cmd=$(eval "$x")
 
 echo ${cmd}
 
+if [ "$EUID" -ne 0 ]
+  then echo -e "${RED}Please run as root"
+  exit
+fi
 
 if [ "${cmd}" == "cpanel" ]; then
 
@@ -72,7 +76,7 @@ fi
 
 
 if [ "${cmd}" = "update" ]; then
- echo soon..
+   https://github.com/7054company/ea1/raw/main/ea8
 exit 0
 fi
 
