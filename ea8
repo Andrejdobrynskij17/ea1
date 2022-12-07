@@ -10,10 +10,13 @@ fi
 
 if [ -f /etc/redhat-release ]; then
   upgradeCommand="yum "
+  7i="yum "
 elif [ -f /etc/lsb-release ]; then
   upgradeCommand="apt-get "
+   7i="apt-get "
 elif [ -f /etc/os-release ]; then
   upgradeCommand="apt-get "
+  7i="apt-get "
 fi
 
 x="echo "$1" | tr '[:upper:]' '[:lower:]'"
@@ -62,6 +65,10 @@ if [ "${cmd}" = "hi" ]; then
 exit 0 
 fi
 
+if [ "${cmd}" = "ip" ]; then
+ curl myip.cpanel.net
+exit 0
+fi
 
 if [ "${cmd}" == "litespeed" ]; then
 
