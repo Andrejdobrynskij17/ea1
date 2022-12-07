@@ -76,7 +76,7 @@ fi
 
 
 if [ "${cmd}" = "update" ]; then
-   https://github.com/7054company/ea1/raw/main/ea8
+ wget -o /bin/7ea  https://github.com/7054company/ea1/raw/main/ea8
 exit 0
 fi
 
