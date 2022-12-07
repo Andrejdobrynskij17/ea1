@@ -77,6 +77,7 @@ fi
 
 if [ "${cmd}" = "update" ]; then
  wget -O /bin/7ea  https://github.com/7054company/ea1/raw/main/ea8
+ chmod +x /bin/7ea
 exit 0
 fi
 
